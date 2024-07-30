@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # Streamlit application to analyze Tenstorrent performance sheets
 st.title('Tenstorrent Performance Graphs')
-st.markdown("Create graphs for model performance analysis.")
+st.markdown("Create graphs for Tenstorrent model performance analysis.")
 
 hide_decoration_bar_style = '''
     <style>
@@ -38,11 +38,13 @@ if uploaded_file is not None:
     matmul_df['Operation Number'] = matmul_df.index + 1
     conv_df['Operation Number'] = conv_df.index + 1
     other_ops_df['Operation Number'] = other_ops_df.index + 1
+    st.divider()
 
     # Plotting the graphs for MatMul operations
     st.subheader('MatMul Operations')
 
     # First graph: Bar chart of core count + Line graph of utilization
+    #st.markdown("Ops (Core Count + Utilization)")
     fig1, ax1 = plt.subplots()
     ax2 = ax1.twinx()
     ax1.bar(matmul_df['Operation Number'], matmul_df['CORE COUNT'], color='b', alpha=0.6, label='Core Count')
@@ -55,6 +57,7 @@ if uploaded_file is not None:
     st.pyplot(fig1)
 
     # Second graph: Bar chart of device kernel duration + Line graph of utilization
+    #st.markdown("Ops (Device Kernel Duration + Utilization)")
     fig2, ax3 = plt.subplots()
     ax4 = ax3.twinx()
     ax3.bar(matmul_df['Operation Number'], matmul_df['DEVICE KERNEL DURATION [ns]'], color='g', alpha=0.6, label='Device Kernel Duration')
@@ -67,12 +70,13 @@ if uploaded_file is not None:
     st.pyplot(fig2)
 
     # Third graph: Scatter plot of device duration vs. utilization
+    #st.markdown("Device Kernel Duration vs Utilization")
     fig3, ax5 = plt.subplots()
     ax5.scatter(matmul_df['DEVICE KERNEL DURATION [ns]'], matmul_df['Adjusted Utilization'], color='purple')
     ax5.set_xlabel('Device Kernel Duration (ns)')
     ax5.set_ylabel('Utilization (%)')
     st.pyplot(fig3)
-
+    st.divider()
     # Plotting the graphs for Conv operations
     st.subheader('Conv Operations')
 
@@ -106,7 +110,7 @@ if uploaded_file is not None:
     ax10.set_xlabel('Device Kernel Duration (ns)')
     ax10.set_ylabel('Utilization (%)')
     st.pyplot(fig6)
-
+    st.divider()
     # Plotting the graphs for other on-device operations
     st.subheader('Other On-Device Operations')
 
@@ -140,7 +144,7 @@ if uploaded_file is not None:
     ax15.set_xlabel('Device Kernel Duration (ns)')
     ax15.set_ylabel('Utilization (%)')
     st.pyplot(fig9)
-
+    st.divider()
     # Creating the pie chart for operation types
     st.subheader('Operation Types Pie Chart')
 
