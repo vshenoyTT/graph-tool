@@ -37,9 +37,20 @@ if uploaded_file is not None:
     other_ops_df['Operation Number'] = other_ops_df.index + 1
     st.divider()
 
+    # Calculate and display average utilization for each set of operations
+    avg_utilization_matmul = matmul_df['Adjusted Utilization'].mean()
+    avg_utilization_conv = conv_df['Adjusted Utilization'].mean()
+    avg_utilization_other = other_ops_df['Adjusted Utilization'].mean()
+    print(matmul_df)
+
+    st.subheader('Average Utilization')
+    st.write(f"Average Utilization for MatMul Operations: {avg_utilization_matmul:.2f}%")
+    st.write(f"Average Utilization for Conv Operations: {avg_utilization_conv:.2f}%")
+    st.write(f"Average Utilization for Other Operations: {avg_utilization_other:.2f}%")
+    st.divider()
+
     # Plotting the graphs for MatMul operations
     st.subheader('MatMul Operations')
-    st.text("")
 
     # First graph: Operation Core Count + Utilization (MatMul)
     st.markdown("Operation Core Count + Utilization (MatMul)")
