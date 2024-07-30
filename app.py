@@ -57,11 +57,11 @@ if uploaded_file is not None:
     ax3.legend(loc='upper left')
     ax4.legend(loc='upper right')
     st.pyplot(fig2)
-    ''' 
+    
     # Third graph: Scatter plot of device duration vs. utilization
     fig3, ax5 = plt.subplots()
     ax5.scatter(df['DEVICE KERNEL DURATION [ns]'], df['Adjusted Utilization'], color='purple')
     ax5.set_xlabel('Device Kernel Duration (ns)')
     ax5.set_ylabel('Utilization (%)')
     st.pyplot(fig3)
-    '''
+    
