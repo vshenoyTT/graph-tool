@@ -160,11 +160,11 @@ if uploaded_file is not None:
 
     # Op Types + Identifiers
     op_types = {
-        'InterleavedToSharded': 'I2S',
         'MatMul': 'MatMul',
+        'Conv': 'Conv',
+        'InterleavedToSharded': 'I2S',
         'MaxPool': 'MaxPool',
         'Move': 'Move',
-        'Conv': 'Conv',
         'Reduce': 'Reduce',
         'Reshard': 'Reshard',
         'tilize': 'Tile/Untile',
