@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from io import BytesIO
 
 # Streamlit application to analyze Tenstorrent performance sheets
 st.title('Tenstorrent Performance Graphs')
@@ -31,8 +30,8 @@ if uploaded_file is not None:
     df['Adjusted Utilization'] = df['Adjusted Utilization'].astype(float)
 
     # Filter DataFrames
-    matmul_df = df[df['OP CODE'].str.contains('matmul', case=False, na=False)].reset_index(drop=True)
-    conv_df = df[df['OP CODE'].str.contains('conv', case=False, na=False)].reset_index(drop=True)
+    matmul_df = df[(df['OP TYPE'] == 'tt_dnn_device') & (df['OP CODE'].str.contains('matmul', case=False, na=False))].reset_index(drop=True)
+    conv_df = df[(df['OP TYPE'] == 'tt_dnn_device') & (df['OP CODE'].str.contains('conv', case=False, na=False))].reset_index(drop=True)
     other_ops_df = df[(df['OP TYPE'] == 'tt_dnn_device') & (~df['OP CODE'].str.contains('matmul|conv', case=False, na=False))].reset_index(drop=True)
 
     # Adding a sequential operation number
@@ -141,3 +140,38 @@ if uploaded_file is not None:
     ax15.set_xlabel('Device Kernel Duration (ns)')
     ax15.set_ylabel('Utilization (%)')
     st.pyplot(fig9)
+
+    # Creating the pie chart for operation types
+    st.subheader('Operation Types Pie Chart')
+
+    # Define the operation types and their identifiers
+    op_types = {
+        'InterleavedToSharded': 'I2S',
+        'MatMul': 'MatMul',
+        'MaxPool': 'MaxPool',
+        'Move': 'Move',
+        'Conv': 'Conv',
+        'Reduce': 'Reduce',
+        'Reshard': 'Reshard',
+        'tilize': 'Tile/Untile',
+        'Binary': 'Binary',
+        'halo': 'Halo'
+    }
+
+    # Calculate the sum of device kernel durations for each operation type
+    op_sums = {op_name: df[df['OP CODE'].str.contains(identifier, case=False, na=False)]['DEVICE KERNEL DURATION [ns]'].sum() for identifier, op_name in op_types.items()}
+
+    # Calculate percentages
+    total_duration = sum(op_sums.values())
+    op_percentages = {op_name: (duration / total_duration) * 100 for op_name, duration in op_sums.items()}
+
+    # Creating the pie chart
+    fig_pie, ax_pie = plt.subplots()
+    wedges, texts = ax_pie.pie(op_sums.values(), startangle=140)
+    
+    # Create a legend with the percentages
+    legend_labels = [f'{op_name}: {op_percentages[op_name]:.1f}%' for op_name in op_sums.keys()]
+    ax_pie.legend(wedges, legend_labels, title="Operation Types", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
+    
+    ax_pie.axis('equal')
+    st.pyplot(fig_pie)
