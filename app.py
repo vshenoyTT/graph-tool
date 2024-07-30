@@ -45,7 +45,7 @@ if uploaded_file is not None:
     ax1.legend(loc='upper left')
     ax2.legend(loc='upper right')
     st.pyplot(fig1)
-    '''
+    
     # Second graph: Bar chart of device kernel duration + Line graph of utilization
     fig2, ax3 = plt.subplots()
     ax4 = ax3.twinx()
@@ -57,7 +57,7 @@ if uploaded_file is not None:
     ax3.legend(loc='upper left')
     ax4.legend(loc='upper right')
     st.pyplot(fig2)
-
+    ''' 
     # Third graph: Scatter plot of device duration vs. utilization
     fig3, ax5 = plt.subplots()
     ax5.scatter(df['DEVICE KERNEL DURATION [ns]'], df['Adjusted Utilization'], color='purple')
