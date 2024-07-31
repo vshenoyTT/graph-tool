@@ -18,7 +18,11 @@ st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
 uploaded_files = st.file_uploader("Upload excel or csv performance sheets", type=["xlsx", "csv"], accept_multiple_files=True)
 
 if uploaded_files:
-    tab_names = [f"File {i+1}" for i in range(len(uploaded_files))]
+    tab_names = []
+    for file in uploaded_files:
+        name_before_dot = (file.name).split('.')[0]
+        tab_names.append(f"{name_before_dot}")
+
     tabs = st.tabs(tab_names)
 
     for i, uploaded_file in enumerate(uploaded_files):
