@@ -33,6 +33,9 @@ if uploaded_files:
             elif ".csv" in name:
                 df = pd.read_csv(uploaded_file)
 
+
+            #uploaded_VIS = st.file_uploader("Upload YAML", type=["yaml"], accept_multiple_files=False)
+
             # Calculate adjusted utilization for all on-device operations
             df['Adjusted Utilization'] = ((df['PM IDEAL [ns]'] / df['DEVICE KERNEL DURATION [ns]']) * (108 / df['CORE COUNT']) * 100)
             df['Adjusted Utilization'] = df['Adjusted Utilization'].replace([np.inf, -np.inf], np.nan).fillna(0)
@@ -212,6 +215,18 @@ if uploaded_files:
             st.divider()
             st.subheader('Download Graph Data')
             filtered_data = pd.concat([matmul_df, conv_df, other_ops_df])
+            col1, col2 = st.columns(2)
+            st.markdown("""
+            <style>
+                div[data-testid="column"] {
+                    width: fit-content !important;
+                    flex: unset;
+                }
+                div[data-testid="column"] * {
+                    width: fit-content !important;
+                }
+            </style>
+            """, unsafe_allow_html=True)
             
             # Select only the specified columns
             filtered_data = filtered_data[['OP CODE', 'OP TYPE', 'GLOBAL CALL COUNT', 'CORE COUNT', 'DEVICE KERNEL DURATION [ns]', 'Adjusted Utilization']]
@@ -221,24 +236,26 @@ if uploaded_files:
 
             csv_data = convert_df_to_csv(filtered_data)
 
-            st.download_button(
-                label="Download Data (CSV)",
-                data=csv_data,
-                file_name=f'graph_data_{name}.csv',
-                mime='text/csv',
-                key=f'download-csv-{name}'
-            )
+            with col1:
+                st.download_button(
+                    label="Download Data (CSV)",
+                    data=csv_data,
+                    file_name=f'graph_data_{name}.csv',
+                    mime='text/csv',
+                    key=f'download-csv-{name}'
+                )
 
             output_overall = BytesIO()
             with pd.ExcelWriter(output_overall, engine='xlsxwriter') as writer:
                 filtered_data.to_excel(writer, index=False, sheet_name='Overall Data')
             overall_data = output_overall.getvalue()
 
-            st.download_button(
-                label="Download Data (XLSX)",
-                data=overall_data,
-                file_name=f"graph_data_{name}.xlsx",
-                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                key=f'download-xlsx-{name}'
-            )
+            with col2:
+                st.download_button(
+                    label="Download Data (XLSX)",
+                    data=overall_data,
+                    file_name=f"graph_data_{name}.xlsx",
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    key=f'download-xlsx-{name}'
+                )
 
