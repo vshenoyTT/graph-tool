@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from io import BytesIO
 
 st.title('Tenstorrent Performance Graphs')
 st.markdown("Create graphs for Tenstorrent model performance analysis.")
@@ -199,3 +200,35 @@ if uploaded_file is not None:
     
     ax_pie.axis('equal')
     st.pyplot(fig_pie)
+
+    # Download filtered data button
+    st.divider()
+    st.subheader('Download Graph Data')
+    filtered_data = pd.concat([matmul_df, conv_df, other_ops_df])
+    
+    # Select only the specified columns
+    filtered_data = filtered_data[['OP CODE', 'OP TYPE', 'GLOBAL CALL COUNT', 'CORE COUNT', 'DEVICE KERNEL DURATION [ns]', 'Adjusted Utilization']]
+    
+    def convert_df_to_csv(df):
+        return df.to_csv(index=False).encode('utf-8')
+
+    csv_data = convert_df_to_csv(filtered_data)
+
+    st.download_button(
+        label="Download Data (CSV)",
+        data=csv_data,
+        file_name='graph_data.csv',
+        mime='text/csv',
+    )
+
+    output_overall = BytesIO()
+    with pd.ExcelWriter(output_overall, engine='xlsxwriter') as writer:
+        filtered_data.to_excel(writer, index=False, sheet_name='Overall Data')
+    overall_data = output_overall.getvalue()
+
+    st.download_button(
+        label="Download Data (XLSX)",
+        data=overall_data,
+        file_name="graph_data.xlsx",
+        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
