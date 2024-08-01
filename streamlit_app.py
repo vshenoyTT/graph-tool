@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from io import BytesIO
 
+# Tenstorrent graphing tool
 st.title('Tenstorrent Performance Graphs')
 st.markdown("Create graphs for Tenstorrent model performance analysis.")
 
