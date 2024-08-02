@@ -16,7 +16,7 @@ hide_decoration_bar_style = '''
 st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
 
 # File uploader for multiple files
-uploaded_files = st.file_uploader("Upload excel or csv performance sheets", type=["xlsx", "csv"], accept_multiple_files=True)
+uploaded_files = st.file_uploader("Upload Excel or CSV performance sheets", type=["xlsx", "csv"], accept_multiple_files=True)
 
 if uploaded_files:
     tab_names = []
@@ -33,9 +33,6 @@ if uploaded_files:
                 df = pd.read_excel(uploaded_file)
             elif ".csv" in name:
                 df = pd.read_csv(uploaded_file)
-
-
-            #uploaded_VIS = st.file_uploader("Upload YAML", type=["yaml"], accept_multiple_files=False)
 
             # Calculate adjusted utilization for all on-device operations
             df['Adjusted Utilization'] = ((df['PM IDEAL [ns]'] / df['DEVICE KERNEL DURATION [ns]']) * (108 / df['CORE COUNT']) * 100)
@@ -61,6 +58,17 @@ if uploaded_files:
             st.write(f"Average Utilization for Other Operations: {avg_utilization_other:.2f}%")
             st.divider()
 
+            def add_download_button(fig, name, description):
+                buf = BytesIO()
+                fig.savefig(buf, format="png")
+                buf.seek(0)
+                st.download_button(
+                    label=f"Download Graph Above",
+                    data=buf,
+                    file_name=f"{name}_{description.replace(' ', '_').lower()}.png",
+                    mime="image/png"
+                )
+
             # Plotting the graphs for MatMul operations
             st.subheader('MatMul Operations')
 
@@ -76,6 +84,7 @@ if uploaded_files:
             ax1.legend(loc='upper left')
             ax2.legend(loc='upper right')
             st.pyplot(fig1)
+            add_download_button(fig1, name, "Operation Core Count + Utilization (MatMul)")
 
             # Second graph: Operation Device Kernel Duration + Utilization (MatMul)
             st.markdown("Operation Device Kernel Duration + Utilization (MatMul)")
@@ -89,6 +98,7 @@ if uploaded_files:
             ax3.legend(loc='upper left')
             ax4.legend(loc='upper right')
             st.pyplot(fig2)
+            add_download_button(fig2, name, "Operation Device Kernel Duration + Utilization (MatMul)")
 
             # Third graph: Device Kernel Duration vs Utilization (MatMul)
             st.markdown("Device Kernel Duration vs Utilization (MatMul)")
@@ -97,6 +107,7 @@ if uploaded_files:
             ax5.set_xlabel('Device Kernel Duration (ns)')
             ax5.set_ylabel('Utilization (%)')
             st.pyplot(fig3)
+            add_download_button(fig3, name, "Device Kernel Duration vs Utilization (MatMul)")
             st.divider()
 
             # Plotting the graphs for Conv operations
@@ -115,6 +126,7 @@ if uploaded_files:
             ax6.legend(loc='upper left')
             ax7.legend(loc='upper right')
             st.pyplot(fig4)
+            add_download_button(fig4, name, "Operation Core Count + Utilization (Conv)")
 
             # Second graph: Operation Device Kernel Duration + Utilization (Conv)
             st.markdown("Operation Device Kernel Duration + Utilization (Conv)")
@@ -128,6 +140,7 @@ if uploaded_files:
             ax8.legend(loc='upper left')
             ax9.legend(loc='upper right')
             st.pyplot(fig5)
+            add_download_button(fig5, name, "Operation Device Kernel Duration + Utilization (Conv)")
 
             # Third graph: Device Kernel Duration vs Utilization (Conv)
             st.markdown("Device Kernel Duration vs Utilization (Conv)")
@@ -136,6 +149,7 @@ if uploaded_files:
             ax10.set_xlabel('Device Kernel Duration (ns)')
             ax10.set_ylabel('Utilization (%)')
             st.pyplot(fig6)
+            add_download_button(fig6, name, "Device Kernel Duration vs Utilization (Conv)")
             st.divider()
             
             # Plotting the graphs for other on-device operations
@@ -154,6 +168,7 @@ if uploaded_files:
             ax11.legend(loc='upper left')
             ax12.legend(loc='upper right')
             st.pyplot(fig7)
+            add_download_button(fig7, name, "Operation Core Count + Utilization (Other)")
 
             # Second graph: Operation Device Kernel Duration + Utilization (Other)
             st.markdown("Operation Device Kernel Duration + Utilization (Other)")
@@ -167,6 +182,7 @@ if uploaded_files:
             ax13.legend(loc='upper left')
             ax14.legend(loc='upper right')
             st.pyplot(fig8)
+            add_download_button(fig8, name, "Operation Device Kernel Duration + Utilization (Other)")
 
             # Third graph: Device Kernel Duration vs Utilization (Other)
             st.markdown("Device Kernel Duration vs Utilization (Other)")
@@ -175,6 +191,7 @@ if uploaded_files:
             ax15.set_xlabel('Device Kernel Duration (ns)')
             ax15.set_ylabel('Utilization (%)')
             st.pyplot(fig9)
+            add_download_button(fig9, name, "Device Kernel Duration vs Utilization (Other)")
             st.divider()
 
             # Pie Chart
@@ -211,6 +228,7 @@ if uploaded_files:
             
             ax_pie.axis('equal')
             st.pyplot(fig_pie)
+            add_download_button(fig_pie, name, "Operation Types Pie Chart")
 
             # Download filtered data button
             st.divider()
@@ -259,4 +277,3 @@ if uploaded_files:
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     key=f'download-xlsx-{name}'
                 )
-
