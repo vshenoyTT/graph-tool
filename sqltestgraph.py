@@ -9,6 +9,7 @@ def plot_buffers(sqlite_file):
     
     query = "SELECT operation_id, address, max_size_per_bank FROM buffers"
     df = pd.read_sql_query(query, conn)
+    print(df)
     conn.close()
 
     fig, ax = plt.subplots(figsize=(10, 8))
