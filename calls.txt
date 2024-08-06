@@ -1,0 +1,5 @@
+python3 /Users/vshenoy/Desktop/graph-tool/sqltabgraph.py '/Users/vshenoy/Downloads/yolov4.sqlite'
+
+python3 /Users/vshenoy/Desktop/graph-tool/sqltestgraph.py '/Users/vshenoy/Downloads/yolov4.sqlite'
+
+streamlit run streamlit_app.py
