@@ -25,7 +25,7 @@ def plot_buffers(sqlite_file):
 
     ax.set_xlabel('Operation ID')
     ax.set_ylabel('Address + Size')
-    ax.set_title('L1 Utilization Visual')
+    ax.set_title('L1 Utilization Visualizer')
     ax.grid(True, axis='y')
     ax.set_xticks(x_positions)
     ax.set_xticklabels([str(op_id) for op_id in grouped.groups.keys()])
