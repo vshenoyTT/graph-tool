@@ -14,7 +14,7 @@ def plot_buffers(sqlite_file):
 
     fig, ax = plt.subplots(figsize=(10, 8))
     grouped = df.groupby('operation_id')
-    #colors = plt.cm.get_cmap('plasma', len(grouped))
+    #colors = plt.cm.get_cmap('tab20', len(grouped))
     x_positions = np.linspace(0, 1, len(grouped))
 
     for (i, (operation_id, group)), x in zip(enumerate(grouped), x_positions):
