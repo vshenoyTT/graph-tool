@@ -10,6 +10,7 @@ def plot_buffers(sqlite_file):
     df = pd.read_sql_query(query, conn)
     conn.close()
 
+    print(df)
     # Pivot the DataFrame for stacked bar plotting
     pivot_df = df.pivot_table(index='operation_id', columns='address', values='max_size_per_bank', fill_value=0)
     
