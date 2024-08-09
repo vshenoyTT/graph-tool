@@ -39,6 +39,8 @@ if uploaded_files:
             df['Adjusted Utilization'] = df['Adjusted Utilization'].replace([np.inf, -np.inf], np.nan).fillna(0)
             df['Adjusted Utilization'] = df['Adjusted Utilization'].astype(float)
 
+
+
             matmul_df = df[(df['OP TYPE'] == 'tt_dnn_device') & (df['OP CODE'].str.contains('matmul', case=False, na=False))].reset_index(drop=True)
             conv_df = df[(df['OP TYPE'] == 'tt_dnn_device') & (df['OP CODE'].str.contains('conv', case=False, na=False))].reset_index(drop=True)
             other_ops_df = df[(df['OP TYPE'] == 'tt_dnn_device') & (~df['OP CODE'].str.contains('matmul|conv', case=False, na=False))].reset_index(drop=True)
