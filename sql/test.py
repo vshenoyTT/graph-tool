@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 from tkinter import ttk
-from tkinter import *
 import mplcursors
 
 def plot_buffers(sqlite_file):
@@ -23,14 +22,17 @@ def plot_buffers(sqlite_file):
     # Pivot the DataFrame for stacked bar plotting
     pivot_df = df.pivot_table(index=['operation_id', 'operation_name'], columns='address', values='max_size_per_bank', fill_value=0)
 
+    pivot_df.index = pivot_df.index.set_levels(
+        [pivot_df.index.levels[0], pivot_df.index.levels[1].str[5:]],
+        level=['operation_id', 'operation_name']
+    )
+
     # Create the main window
     root = tk.Tk()
     root.title("L1 Utilization Visualizer")
-    scrollbar = Scrollbar(root)
-    scrollbar.pack( side = RIGHT, fill=Y )
 
     # Set the window size (increase the size as needed)
-    root.geometry("1200x900")  # Example size: 1200x900 pixels
+    root.geometry("1400x900")  # Example size: 1400x900 pixels
 
     # Create a notebook (tab control)
     notebook = ttk.Notebook(root)
@@ -49,18 +51,20 @@ def plot_buffers(sqlite_file):
         notebook.add(tab, text=f'Ops {start_idx}-{end_idx-1}')
 
         # Create a figure and plot the chunk
-        fig, ax = plt.subplots(figsize=(12, 10))
+        fig, ax = plt.subplots(figsize=(16, 10))
         bars = chunk_df.plot(kind='bar', stacked=True, ax=ax, alpha=0.7, legend=False)
 
         ax.set_xlabel('Operation ID')
         ax.set_ylabel('L1 Buffer Size')
         ax.set_title(f'L1 Utilization Visualizer (Ops {start_idx}-{end_idx-1})')
         ax.grid(True, axis='y')
-        ax.set_xticks([])
 
-        # Add operation names as x-tick labels
+        # Rotate x-tick labels to 90 degrees and adjust the bottom margin
         ax.set_xticks(range(len(chunk_df)))
-        ax.set_xticklabels(chunk_df.index.get_level_values('operation_name'), rotation=90)
+        ax.set_xticklabels(chunk_df.index.get_level_values('operation_name'), rotation=90, ha='right')
+
+        # Adjust layout to prevent clipping
+        fig.tight_layout()
 
         # Add tooltips to display operation names on hover
         cursor = mplcursors.cursor(bars, hover=True)

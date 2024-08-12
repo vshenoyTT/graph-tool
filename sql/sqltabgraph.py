@@ -1,5 +1,3 @@
-#color the bars according to their operation type. op type is in the 'operations' table, which has 'operation_id' linked to name
-
 import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -39,7 +37,7 @@ def plot_buffers(sqlite_file):
         notebook.add(tab, text=f'Ops {start_idx}-{end_idx-1}')
 
         # Create a figure and plot the chunk
-        fig, ax = plt.subplots(figsize=(10, 8))
+        fig, ax = plt.subplots(figsize=(16, 10))
         chunk_df.plot(kind='bar', stacked=True, ax=ax, alpha=0.7, legend=False)
 
         ax.set_xlabel('Operation ID')
