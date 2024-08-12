@@ -1,26 +1,36 @@
-#color the bars according to their operation type. op type is in the 'operations' table, which has 'operation_id' linked to name
-
 import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 from tkinter import ttk
+from tkinter import *
+import mplcursors
 
 def plot_buffers(sqlite_file):
     # Connect to the SQLite database
     conn = sqlite3.connect(sqlite_file)
     
-    query = "SELECT operation_id, address, max_size_per_bank FROM buffers"
+    # Modified query to join with the operations table to get the operation name
+    query = """
+    SELECT buffers.operation_id, operations.name as operation_name, buffers.address, buffers.max_size_per_bank
+    FROM buffers
+    JOIN operations ON buffers.operation_id = operations.operation_id
+    """
     df = pd.read_sql_query(query, conn)
     conn.close()
 
     # Pivot the DataFrame for stacked bar plotting
-    pivot_df = df.pivot_table(index='operation_id', columns='address', values='max_size_per_bank', fill_value=0)
+    pivot_df = df.pivot_table(index=['operation_id', 'operation_name'], columns='address', values='max_size_per_bank', fill_value=0)
 
     # Create the main window
     root = tk.Tk()
     root.title("L1 Utilization Visualizer")
+    scrollbar = Scrollbar(root)
+    scrollbar.pack( side = RIGHT, fill=Y )
+
+    # Set the window size (increase the size as needed)
+    root.geometry("1200x900")  # Example size: 1200x900 pixels
 
     # Create a notebook (tab control)
     notebook = ttk.Notebook(root)
@@ -39,14 +49,22 @@ def plot_buffers(sqlite_file):
         notebook.add(tab, text=f'Ops {start_idx}-{end_idx-1}')
 
         # Create a figure and plot the chunk
-        fig, ax = plt.subplots(figsize=(10, 8))
-        chunk_df.plot(kind='bar', stacked=True, ax=ax, alpha=0.7, legend=False)
+        fig, ax = plt.subplots(figsize=(12, 10))
+        bars = chunk_df.plot(kind='bar', stacked=True, ax=ax, alpha=0.7, legend=False)
 
         ax.set_xlabel('Operation ID')
         ax.set_ylabel('L1 Buffer Size')
         ax.set_title(f'L1 Utilization Visualizer (Ops {start_idx}-{end_idx-1})')
         ax.grid(True, axis='y')
         ax.set_xticks([])
+
+        # Add operation names as x-tick labels
+        ax.set_xticks(range(len(chunk_df)))
+        ax.set_xticklabels(chunk_df.index.get_level_values('operation_name'), rotation=90)
+
+        # Add tooltips to display operation names on hover
+        cursor = mplcursors.cursor(bars, hover=True)
+        cursor.connect("add", lambda sel: sel.annotation.set_text(chunk_df.index[sel.target.index][1]))
 
         # Create a canvas and add the figure to it
         canvas = FigureCanvasTkAgg(fig, master=tab)
