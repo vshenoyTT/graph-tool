@@ -20,7 +20,7 @@ def plot_buffers(sqlite_file):
     conn.close()
 
     # Pivot the DataFrame for stacked bar plotting
-    pivot_df = df.pivot_table(index=['operation_id', 'operation_name'], columns='address', values='max_size_per_bank', fill_value=0)
+    pivot_df = df.pivot_table(index=['operation_id', 'operation_name'], columns='max_size_per_bank', values='max_size_per_bank', fill_value=0)
 
     pivot_df.index = pivot_df.index.set_levels(
         [pivot_df.index.levels[0], pivot_df.index.levels[1].str[5:]],
