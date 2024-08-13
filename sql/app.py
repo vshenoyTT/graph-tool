@@ -2,6 +2,7 @@ import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
+import mplcursors
 
 def plot_buffers(sqlite_file):
     conn = sqlite3.connect(sqlite_file)
@@ -43,10 +44,21 @@ def plot_buffers(sqlite_file):
 
         fig.tight_layout()
 
+        def make_cursor_callback(local_chunk_df):
+            def on_add(sel):
+                idx = sel.target.index
+                operation_name = local_chunk_df.index[idx][1]
+                sel.annotation.set_text(operation_name)
+            return on_add
+
+        # Add tooltips to display operation names on hover
+        cursor = mplcursors.cursor(bars, hover=True)
+        cursor.connect("add", make_cursor_callback(chunk_df))
+
         st.pyplot(fig)
 
         st.write(f"Operations {start_idx}-{end_idx-1}")
-        st.dataframe(chunk_df.index.get_level_values('operation_name'))
+        st.dataframe(chunk_df.index.get_level_values('operation_name'), use_container_width=True)
 
 def main():
     st.title("L1 Utilization Visualizer")
