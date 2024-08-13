@@ -36,11 +36,11 @@ def plot_buffers(sqlite_file):
         
         ax.set_xlabel('Operation ID')
         ax.set_ylabel('L1 Buffer Size')
-        ax.set_title(f'L1 Utilization Visualizer (Ops {start_idx}-{end_idx-1})')
+        ax.set_title(f'L1 Utilization Visualizer (Ops {chunk_df.index[0][0]}-{chunk_df.index[-1][0]})')
         ax.grid(True, axis='y')
 
-        ax.set_xticks([])  # Remove the x-ticks
-        ax.set_xticklabels([])  # Remove x-tick labels
+        ax.set_xticks(range(len(chunk_df)))  # Set x-ticks for each operation
+        ax.set_xticklabels(chunk_df.index.get_level_values('operation_id'), rotation=90)  # Label x-ticks with operation IDs
 
         fig.tight_layout()
 
@@ -57,8 +57,10 @@ def plot_buffers(sqlite_file):
 
         st.pyplot(fig)
 
-        st.write(f"Operations {start_idx}-{end_idx-1}")
-        st.dataframe(chunk_df.index.get_level_values('operation_name'), use_container_width=True)
+        st.write(f"Operations {chunk_df.index[0][0]}-{chunk_df.index[-1][0]}")
+        operation_info_df = chunk_df.index.to_frame(index=False)
+        operation_info_df.reset_index(drop=True, inplace=True) 
+        st.dataframe(operation_info_df, use_container_width=True)
 
 def main():
     st.title("L1 Utilization Visualizer")
