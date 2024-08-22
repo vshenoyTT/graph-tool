@@ -15,6 +15,17 @@ hide_decoration_bar_style = '''
 '''
 st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
 
+
+option = st.radio("Select Configuration:", ('Grayskull', 'Wormhole'))
+
+core_count = 0
+if option == 'Grayskull':
+    core_count = 108
+else:
+    core_count = 64
+
+st.write("")
+
 # File uploader for multiple files
 uploaded_files = st.file_uploader("Upload Excel or CSV performance sheets", type=["xlsx", "csv"], accept_multiple_files=True)
 
@@ -35,7 +46,7 @@ if uploaded_files:
                 df = pd.read_csv(uploaded_file)
 
             # Calculate adjusted utilization for all on-device operations
-            df['Adjusted Utilization'] = ((df['PM IDEAL [ns]'] / df['DEVICE KERNEL DURATION [ns]']) * (108 / df['CORE COUNT']) * 100)
+            df['Adjusted Utilization'] = ((df['PM IDEAL [ns]'] / df['DEVICE KERNEL DURATION [ns]']) * (core_count / df['CORE COUNT']) * 100)
             df['Adjusted Utilization'] = df['Adjusted Utilization'].replace([np.inf, -np.inf], np.nan).fillna(0)
             df['Adjusted Utilization'] = df['Adjusted Utilization'].astype(float)
 
